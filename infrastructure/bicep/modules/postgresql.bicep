@@ -64,5 +64,6 @@ output serverName string = postgresServer.name
 output serverFqdn string = postgresServer.properties.fullyQualifiedDomainName
 output databaseName string = dbName
 output adminLogin string = adminLogin
+@secure()
 output connectionString string = 'Host=${postgresServer.properties.fullyQualifiedDomainName};Port=5432;Database=${dbName};Username=${adminLogin};Password=${adminPassword};SSL Mode=Require'
 
