@@ -54,24 +54,62 @@ jobs:
           resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
           template: ./infrastructure/bicep/main.bicep
           parameters: |
-            environment=${{ github.event.inputs.environment || 'prod' }}
-            location=${{ env.AZURE_LOCATION }}
-            postgresAdminLogin=minitrello_admin
-            postgresAdminPassword=${{ secrets.POSTGRES_ADMIN_PASSWORD }}
-            jwtKey=${{ secrets.JWT_KEY }}
-            jwtIssuer=MiniTrello-API
-            frontendUrl=${{ secrets.FRONTEND_URL }}
-            applicationBaseUrl=${{ secrets.APPLICATION_BASE_URL }}
-            resendApiKey=${{ secrets.RESEND_API_KEY }}
-            resendFromEmail=${{ secrets.RESEND_FROM_EMAIL }}
-            emailSmtpHost=${{ secrets.EMAIL_SMTP_HOST }}
-            emailSmtpPort=${{ secrets.EMAIL_SMTP_PORT || '587' }}
-            emailUsername=${{ secrets.EMAIL_USERNAME }}
-            emailPassword=${{ secrets.EMAIL_PASSWORD }}
-            emailFromEmail=${{ secrets.EMAIL_FROM_EMAIL }}
-            repositoryUrl=https://github.com/${{ github.repository }}
-            repositoryBranch=${{ github.ref_name }}
-            appServicePrincipalId=${{ secrets.APP_SERVICE_PRINCIPAL_ID || '' }}
+            {
+              "environment": {
+                "value": "${{ github.event.inputs.environment || 'prod' }}"
+              },
+              "location": {
+                "value": "${{ env.AZURE_LOCATION }}"
+              },
+              "postgresAdminLogin": {
+                "value": "minitrello_admin"
+              },
+              "postgresAdminPassword": {
+                "value": "${{ secrets.POSTGRES_ADMIN_PASSWORD }}"
+              },
+              "jwtKey": {
+                "value": "${{ secrets.JWT_KEY }}"
+              },
+              "jwtIssuer": {
+                "value": "MiniTrello-API"
+              },
+              "frontendUrl": {
+                "value": "${{ secrets.FRONTEND_URL }}"
+              },
+              "applicationBaseUrl": {
+                "value": "${{ secrets.APPLICATION_BASE_URL }}"
+              },
+              "resendApiKey": {
+                "value": "${{ secrets.RESEND_API_KEY }}"
+              },
+              "resendFromEmail": {
+                "value": "${{ secrets.RESEND_FROM_EMAIL }}"
+              },
+              "emailSmtpHost": {
+                "value": "${{ secrets.EMAIL_SMTP_HOST }}"
+              },
+              "emailSmtpPort": {
+                "value": ${{ secrets.EMAIL_SMTP_PORT || '587' }}
+              },
+              "emailUsername": {
+                "value": "${{ secrets.EMAIL_USERNAME }}"
+              },
+              "emailPassword": {
+                "value": "${{ secrets.EMAIL_PASSWORD }}"
+              },
+              "emailFromEmail": {
+                "value": "${{ secrets.EMAIL_FROM_EMAIL }}"
+              },
+              "repositoryUrl": {
+                "value": "https://github.com/${{ github.repository }}"
+              },
+              "repositoryBranch": {
+                "value": "${{ github.ref_name }}"
+              },
+              "appServicePrincipalId": {
+                "value": "${{ secrets.APP_SERVICE_PRINCIPAL_ID || '' }}"
+              }
+            }
           failOnStdErr: false
 
       - name: Get Deployment Outputs
