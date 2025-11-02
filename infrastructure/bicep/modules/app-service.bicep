@@ -4,17 +4,21 @@ param location string = resourceGroup().location
 param environment string = 'prod'
 param appServicePlanSku string = 'B1'
 param appServicePlanTier string = 'Basic'
-param postgresConnectionString string @secure()
+@secure()
+param postgresConnectionString string
 param appInsightsInstrumentationKey string
-param jwtKey string @secure()
+@secure()
+param jwtKey string
 param jwtIssuer string
 param frontendUrl string
-param resendApiKey string @secure()
+@secure()
+param resendApiKey string
 param resendFromEmail string
 param emailSmtpHost string = ''
 param emailSmtpPort int = 587
 param emailUsername string = ''
-param emailPassword string @secure()
+@secure()
+param emailPassword string = ''
 param emailFromEmail string = ''
 param applicationBaseUrl string
 

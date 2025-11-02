@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +6,7 @@ import { apiClient } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import type { CreateListDto, CreateCardDto, BoardDto, ListDto, CardDto } from '@/types';
+import type { CreateListDto, CreateCardDto, BoardDto, CardDto } from '@/types';
 import { BoardRole } from '@/types';
 import { ArrowLeft, Plus, Users, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -23,7 +23,6 @@ export function BoardPage() {
   const { user } = useAuth();
   const [newListTitle, setNewListTitle] = useState('');
   const [showCreateList, setShowCreateList] = useState(false);
-  const [editingCard, setEditingCard] = useState<string | null>(null);
   const [showMemberManagement, setShowMemberManagement] = useState(false);
   const [selectedCard, setSelectedCard] = useState<CardDto | null>(null);
   const [showCardModal, setShowCardModal] = useState(false);
@@ -39,7 +38,7 @@ export function BoardPage() {
   });
 
   // Handle 404 - board was deleted or doesn't exist
-  React.useEffect(() => {
+  useEffect(() => {
     if (boardError && (boardError as any)?.response?.status === 404) {
       // Remove the board from cache and redirect
       queryClient.removeQueries({ queryKey: ['board', id] });
@@ -92,7 +91,7 @@ export function BoardPage() {
 
       return { previousBoard };
     },
-    onError: (err, data, context) => {
+    onError: (err, _data, context) => {
       // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousBoard) {
         queryClient.setQueryData(['board', id], context.previousBoard);
@@ -162,7 +161,7 @@ export function BoardPage() {
 
       return { previousBoard };
     },
-    onError: (err, data, context) => {
+    onError: (err, _data, context) => {
       // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousBoard) {
         queryClient.setQueryData(['board', id], context.previousBoard);
@@ -174,6 +173,18 @@ export function BoardPage() {
     onSettled: () => {
       // Always refetch after error or success to ensure we have the latest data
       queryClient.invalidateQueries({ queryKey: ['board', id] });
+    },
+  });
+
+  const updateCardMutation = useMutation({
+    mutationFn: ({ cardId, data }: { cardId: string; data: Partial<CardDto> }) => 
+      apiClient.updateCard(cardId, data as any),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['board', id] });
+    },
+    onError: (error) => {
+      console.error('Error updating card:', error);
+      alert(t('alerts.updateCardError') || 'Error updating card');
     },
   });
 
@@ -252,7 +263,7 @@ export function BoardPage() {
       // Navigate after cache is updated and data is refetched
       navigate('/dashboard');
     },
-    onError: (error, variables, context) => {
+    onError: (error, _variables, context) => {
       // Rollback on error - restore previous board cache
       if (context?.previousBoard) {
         queryClient.setQueryData(['board', id], context.previousBoard);
@@ -543,9 +554,10 @@ export function BoardPage() {
           handleCreateCardFromModal(cardData, attachments);
         } : undefined}
         onUpdateCard={!isCreatingCard ? handleUpdateCard : undefined}
-        currentUser={user}
+        currentUser={user || undefined}
         boardId={id}
         isCreatingLoading={isCreatingCardLoading}
+        creatingCardListId={creatingCardListId}
       />
     </div>
   );

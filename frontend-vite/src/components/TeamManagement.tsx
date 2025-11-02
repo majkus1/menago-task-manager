@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { apiClient } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import type { TeamDto, TeamMemberDto, InviteUserToTeamDto, UpdateTeamMemberRoleDto } from '@/types';
-import { Users, Mail, Crown, Shield, User, MoreHorizontal, Trash2 } from 'lucide-react';
+import type { TeamDto, InviteUserToTeamDto, UpdateTeamMemberRoleDto } from '@/types';
+import { Users, Mail, Crown, Shield, User, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface TeamManagementProps {
@@ -22,7 +22,7 @@ export function TeamManagement({ team, currentUserId }: TeamManagementProps) {
 
   const isOwner = team.owner.id === currentUserId;
   const isAdmin = team.members.find(m => m.user.id === currentUserId)?.role === 1; // Admin role
-  const canManageMembers = isOwner || isAdmin;
+  // const canManageMembers = isOwner || isAdmin; // Unused but kept for potential future use
   
   // Owner has same permissions as admin
   const canManageTeam = isOwner || isAdmin;
@@ -51,7 +51,7 @@ export function TeamManagement({ team, currentUserId }: TeamManagementProps) {
     },
     onError: (error) => {
       console.error('Error inviting user:', error);
-      const errorMessage = error.response?.data?.message || t('team.inviteError');
+      const errorMessage = (error as any)?.response?.data?.message || t('team.inviteError');
       alert(errorMessage);
     },
   });
@@ -202,7 +202,7 @@ export function TeamManagement({ team, currentUserId }: TeamManagementProps) {
     },
     onError: (error) => {
       console.error('Error deleting team:', error);
-      const errorMessage = error.response?.data?.message || t('team.deleteTeamError');
+      const errorMessage = (error as any)?.response?.data?.message || t('team.deleteTeamError');
       alert(errorMessage);
     },
   });

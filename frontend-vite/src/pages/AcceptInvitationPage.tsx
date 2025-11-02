@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { apiClient } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
-import { CheckCircle, XCircle, Mail, Users } from 'lucide-react';
+import { CheckCircle, XCircle, Mail } from 'lucide-react';
 
 export function AcceptInvitationPage() {
   const [searchParams] = useSearchParams();

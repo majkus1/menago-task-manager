@@ -1,6 +1,6 @@
-@description('Main Bicep template for MiniTrello Azure Infrastructure')
-
 targetScope = 'resourceGroup'
+
+@description('Main Bicep template for MiniTrello Azure Infrastructure')
 
 @description('Environment name (prod, dev, staging)')
 param environment string = 'prod'

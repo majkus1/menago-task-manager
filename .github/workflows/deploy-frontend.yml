@@ -61,11 +61,17 @@ jobs:
         id: staticWebAppName
         run: |
           STATIC_WEB_APP_NAME=$(az staticwebapp list --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "[?contains(name, 'minitrello-frontend')].name" -o tsv | head -n 1)
-          echo "name=$STATIC_WEB_APP_NAME" >> $GITHUB_OUTPUT
           if [ -z "$STATIC_WEB_APP_NAME" ]; then
-            echo "Static Web App not found. Please deploy infrastructure first."
+            echo "Static Web App not found. Checking available resources..."
+            echo "Available static web apps:"
+            az staticwebapp list --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "[].name" -o table || true
+            echo "Available resources in resource group:"
+            az resource list --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "[].{Name:name, Type:type}" -o table || true
+            echo "Please deploy infrastructure first using 'Deploy Azure Infrastructure (IaC)' workflow."
             exit 1
           fi
+          echo "Found Static Web App: $STATIC_WEB_APP_NAME"
+          echo "name=$STATIC_WEB_APP_NAME" >> $GITHUB_OUTPUT
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1

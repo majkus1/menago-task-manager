@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { apiClient } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import type { BoardMemberDto, TeamMemberDto } from '@/types';
+import type { BoardMemberDto } from '@/types';
 import { BoardRole } from '@/types';
 import { Users, UserPlus, UserX, Settings, Crown, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

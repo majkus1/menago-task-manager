@@ -54,12 +54,19 @@ jobs:
       - name: Get App Service Name
         id: appServiceName
         run: |
+          # Try to find App Service with pattern prod-minitrello-backend or minitrello-backend
           APP_SERVICE_NAME=$(az webapp list --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "[?contains(name, 'minitrello-backend')].name" -o tsv | head -n 1)
-          echo "name=$APP_SERVICE_NAME" >> $GITHUB_OUTPUT
           if [ -z "$APP_SERVICE_NAME" ]; then
-            echo "App Service not found. Please deploy infrastructure first."
+            echo "App Service not found. Checking available resources..."
+            echo "Available web apps:"
+            az webapp list --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "[].name" -o table || true
+            echo "Available resources in resource group:"
+            az resource list --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "[].{Name:name, Type:type}" -o table || true
+            echo "Please deploy infrastructure first using 'Deploy Azure Infrastructure (IaC)' workflow."
             exit 1
           fi
+          echo "Found App Service: $APP_SERVICE_NAME"
+          echo "name=$APP_SERVICE_NAME" >> $GITHUB_OUTPUT
 
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3

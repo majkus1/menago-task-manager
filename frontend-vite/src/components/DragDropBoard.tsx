@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -6,20 +5,23 @@ import {
   useSensor,
   useSensors,
   useDroppable,
+  type DragStartEvent,
+  type DragOverEvent,
 } from '@dnd-kit/core';
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
+import { useState } from 'react';
 import { CSS } from '@dnd-kit/utilities';
 import { useTranslation } from 'react-i18next';
-import type { CardDto, ListDto, MoveCardDto } from '@/types';
+import type { BoardDto, CardDto, ListDto, MoveCardDto } from '@/types';
 import { apiClient } from '@/lib/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/Button';
 import { Plus, Trash2, Calendar, User } from 'lucide-react';
-import { formatDate, getPriorityColor, getPriorityLabel } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
 
 interface DraggableCardProps {
   card: CardDto;
@@ -134,7 +136,7 @@ interface DraggableListProps {
   canDelete?: boolean;
 }
 
-function DraggableList({ list, onCardClick, onCreateCard, onOpenCardModal, onCreateNewCard, onDeleteCard, onDeleteList, canDelete }: DraggableListProps) {
+function DraggableList({ list, onOpenCardModal, onCreateNewCard, onDeleteCard, onDeleteList, canDelete }: DraggableListProps) {
   const { t } = useTranslation();
   const { setNodeRef, isOver } = useDroppable({
     id: list.id,
@@ -212,7 +214,7 @@ interface DragDropBoardProps {
 }
 
 export function DragDropBoard({ board, onCardClick, onCreateCard, onCreateList, onOpenCardModal, onCreateNewCard, onDeleteCard, onDeleteList, canDelete }: DragDropBoardProps) {
-  const [activeCard, setActiveCard] = React.useState<CardDto | null>(null);
+  const [activeCard, setActiveCard] = useState<CardDto | null>(null);
   const queryClient = useQueryClient();
 
   const moveCardMutation = useMutation({
@@ -274,7 +276,7 @@ export function DragDropBoard({ board, onCardClick, onCreateCard, onCreateList, 
       // Return a context object with the snapshotted value
       return { previousBoard };
     },
-    onError: (err, data, context) => {
+    onError: (_err, _data, context) => {
       // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousBoard) {
         queryClient.setQueryData(['board', board.id], context.previousBoard);
@@ -294,32 +296,32 @@ export function DragDropBoard({ board, onCardClick, onCreateCard, onCreateList, 
     })
   );
 
-  const handleDragStart = (event: any) => {
+  const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     const card = board.lists
-      .flatMap(list => list.cards)
-      .find(card => card.id === active.id);
+      .flatMap((list: ListDto) => list.cards)
+      .find((card: CardDto) => card.id === String(active.id));
     
     if (card) {
       setActiveCard(card);
     }
   };
 
-  const handleDragOver = (event: any) => {
+  const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     
     if (!over) return;
 
     const activeCard = board.lists
-      .flatMap(list => list.cards)
-      .find(card => card.id === active.id);
+      .flatMap((list: ListDto) => list.cards)
+      .find((card: CardDto) => card.id === String(active.id));
 
     if (!activeCard) return;
 
     const overId = over.id as string;
     
     // Check if dropping on a list
-    const targetList = board.lists.find(list => list.id === overId);
+    const targetList = board.lists.find((list: ListDto) => list.id === overId);
     if (targetList && targetList.id !== activeCard.listId) {
       // Visual feedback is handled by useDroppable
       return;
@@ -327,8 +329,8 @@ export function DragDropBoard({ board, onCardClick, onCreateCard, onCreateList, 
 
     // Check if dropping on another card
     const targetCard = board.lists
-      .flatMap(list => list.cards)
-      .find(card => card.id === overId);
+      .flatMap((list: ListDto) => list.cards)
+      .find((card: CardDto) => card.id === overId);
     
     if (targetCard && targetCard.listId !== activeCard.listId) {
       // Visual feedback for card-to-card drops
@@ -343,15 +345,15 @@ export function DragDropBoard({ board, onCardClick, onCreateCard, onCreateList, 
     if (!over) return;
 
     const activeCard = board.lists
-      .flatMap(list => list.cards)
-      .find(card => card.id === active.id);
+      .flatMap((list: ListDto) => list.cards)
+      .find((card: CardDto) => card.id === String(active.id));
 
     if (!activeCard) return;
 
     const overId = over.id as string;
     
     // Check if dropping on a list
-    const targetList = board.lists.find(list => list.id === overId);
+    const targetList = board.lists.find((list: ListDto) => list.id === overId);
     if (targetList && targetList.id !== activeCard.listId) {
       // Move card to the end of the target list
       moveCardMutation.mutate({
@@ -364,8 +366,8 @@ export function DragDropBoard({ board, onCardClick, onCreateCard, onCreateList, 
 
     // Check if dropping on another card
     const targetCard = board.lists
-      .flatMap(list => list.cards)
-      .find(card => card.id === overId);
+      .flatMap((list: ListDto) => list.cards)
+      .find((card: CardDto) => card.id === overId);
     
     if (targetCard && targetCard.listId !== activeCard.listId) {
       // Move card to the target card's list
@@ -385,7 +387,7 @@ export function DragDropBoard({ board, onCardClick, onCreateCard, onCreateList, 
       onDragEnd={handleDragEnd}
     >
       <div className="flex flex-col md:flex-row gap-6 overflow-x-auto pb-6">
-        {board.lists.map((list) => (
+        {board.lists.map((list: ListDto) => (
           <DraggableList
             key={list.id}
             list={list}

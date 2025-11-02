@@ -1,12 +1,11 @@
-import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Users, Settings, Crown, Shield, User, Calendar, Plus } from 'lucide-react';
+import { ArrowLeft, Users, Settings, Crown, Shield, User, Plus } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useAuth } from '@/contexts/AuthContext';
 import { TeamRole } from '@/types';
 

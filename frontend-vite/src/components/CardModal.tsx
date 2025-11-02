@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { apiClient } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import type { CardDto, CreateCardDto, CreateCommentDto, CardCommentDto, UserDto } from '@/types';
-import { X, Trash2, MessageCircle, Paperclip, Send, User, Calendar, Clock, FileText } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import type { CardDto, CreateCardDto, CreateCommentDto, UserDto } from '@/types';
+import { X, Trash2, MessageCircle, Paperclip, Send, Clock, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CardModalProps {
@@ -18,9 +18,10 @@ interface CardModalProps {
   currentUser?: UserDto;
   boardId?: string;
   isCreatingLoading?: boolean;
+  creatingCardListId?: string | null;
 }
 
-export function CardModal({ card, isOpen, onClose, onCreateCard, onUpdateCard, currentUser, boardId, isCreatingLoading = false }: CardModalProps) {
+export function CardModal({ card, isOpen, onClose, onCreateCard, onUpdateCard, currentUser, boardId, isCreatingLoading = false, creatingCardListId }: CardModalProps) {
   const { t, i18n } = useTranslation();
   const isCreating = !card;
   const queryClient = useQueryClient();
@@ -60,7 +61,9 @@ export function CardModal({ card, isOpen, onClose, onCreateCard, onUpdateCard, c
     },
   });
 
-  const updateCardMutation = useMutation({
+  // updateCardMutation is handled by parent component (BoardPage)
+  // This mutation is for local updates only
+  const _updateCardMutation = useMutation({
     mutationFn: ({ cardId, data }: { cardId: string; data: Partial<CardDto> }) => 
       apiClient.updateCard(cardId, data),
     onSuccess: () => {
@@ -71,7 +74,7 @@ export function CardModal({ card, isOpen, onClose, onCreateCard, onUpdateCard, c
   const addAttachmentMutation = useMutation({
     mutationFn: ({ cardId, file }: { cardId: string; file: File }) => 
       apiClient.addAttachment(cardId, file),
-    onMutate: async ({ cardId, file }) => {
+    onMutate: async ({ cardId: _cardId, file }) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['board', boardId] });
       
@@ -125,7 +128,7 @@ export function CardModal({ card, isOpen, onClose, onCreateCard, onUpdateCard, c
       
       return { previousBoard };
     },
-    onError: (err, variables, context) => {
+    onError: (_err, _variables, context) => {
       // Rollback on error
       if (context?.previousBoard) {
         queryClient.setQueryData(['board', boardId], context.previousBoard);
@@ -201,7 +204,7 @@ export function CardModal({ card, isOpen, onClose, onCreateCard, onUpdateCard, c
       
       return { previousBoard };
     },
-    onError: (err, newComment, context) => {
+    onError: (_err, _newComment, context) => {
       // Rollback on error
       if (context?.previousBoard) {
         queryClient.setQueryData(['board', boardId], context.previousBoard);
@@ -231,7 +234,7 @@ export function CardModal({ card, isOpen, onClose, onCreateCard, onUpdateCard, c
   });
 
   // Get current card from cache (updates automatically with optimistic updates)
-  const currentCard = React.useMemo(() => {
+  const currentCard = useMemo(() => {
     if (!card || !boardQuery.data) return card;
     
     // Find card in board from cache
@@ -251,10 +254,10 @@ export function CardModal({ card, isOpen, onClose, onCreateCard, onUpdateCard, c
     e.preventDefault();
     
     if (isCreating && onCreateCard) {
-      const cardData = {
+      const cardData: CreateCardDto = {
         title: formData.title,
         description: formData.description,
-        listId: card?.listId || '',
+        listId: creatingCardListId || '',
         position: 0,
       };
       

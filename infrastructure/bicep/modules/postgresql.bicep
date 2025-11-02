@@ -3,7 +3,8 @@
 param location string = resourceGroup().location
 param environment string = 'prod'
 param adminLogin string
-param adminPassword string @secure()
+@secure()
+param adminPassword string
 param dbName string = 'minitrello_db'
 param skuName string = 'Standard_B1ms'
 param tier string = 'Burstable'
