@@ -132,6 +132,7 @@ module staticWebApp 'modules/static-web-app.bicep' = {
 // Outputs
 output backendUrl string = appService.outputs.appServiceUrl
 output frontendUrl string = staticWebApp.outputs.staticWebAppUrl
+output staticWebAppName string = staticWebApp.outputs.staticWebAppName
 output postgresServerName string = postgresql.outputs.serverName
 output postgresServerFqdn string = postgresql.outputs.serverFqdn
 output appInsightsInstrumentationKey string = appInsights.outputs.instrumentationKey

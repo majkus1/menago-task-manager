@@ -149,7 +149,34 @@ jobs:
       - name: Get Deployment Outputs
         id: outputs
         run: |
+          DEPLOYMENT_NAME="minitrello-deployment-${{ github.run_id }}-${{ github.run_number }}"
           echo "Infrastructure deployed successfully!"
-          echo "Backend URL: $(az deployment group show --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name main --query properties.outputs.backendUrl.value -o tsv)"
-          echo "Frontend URL: $(az deployment group show --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name main --query properties.outputs.frontendUrl.value -o tsv)"
+          echo "Getting outputs from deployment: $DEPLOYMENT_NAME"
+          
+          BACKEND_URL=$(az deployment group show --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name "$DEPLOYMENT_NAME" --query properties.outputs.backendUrl.value -o tsv)
+          FRONTEND_URL=$(az deployment group show --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name "$DEPLOYMENT_NAME" --query properties.outputs.frontendUrl.value -o tsv)
+          STATIC_WEB_APP_NAME=$(az deployment group show --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name "$DEPLOYMENT_NAME" --query properties.outputs.staticWebAppName.value -o tsv)
+          
+          echo "Backend URL: $BACKEND_URL"
+          echo "Frontend URL: $FRONTEND_URL"
+          echo "Static Web App Name: $STATIC_WEB_APP_NAME"
+          echo "::notice title=Deployment URLs::Backend: $BACKEND_URL | Frontend: $FRONTEND_URL"
+          
+          # Static Web App API Token
+          # Note: Token needs to be retrieved manually from Azure Portal after first deployment
+          # Go to: Azure Portal > Static Web App ($STATIC_WEB_APP_NAME) > Manage deployment token
+          echo "::notice title=Static Web App Token::Token must be retrieved manually from Azure Portal for: $STATIC_WEB_APP_NAME"
+          
+          echo ""
+          echo "=== Next Steps ==="
+          echo "1. Update GitHub Secrets with the following URLs:"
+          echo "   FRONTEND_URL: $FRONTEND_URL"
+          echo "   APPLICATION_BASE_URL: $FRONTEND_URL"
+          echo "   VITE_API_BASE_URL: $BACKEND_URL"
+          echo ""
+          echo "2. Get Static Web App API Token from Azure Portal:"
+          echo "   - Go to: Azure Portal > Static Web App ($STATIC_WEB_APP_NAME)"
+          echo "   - Navigate to: 'Manage deployment token'"
+          echo "   - Copy the token and update AZURE_STATIC_WEB_APPS_API_TOKEN secret"
+          echo ""
 
