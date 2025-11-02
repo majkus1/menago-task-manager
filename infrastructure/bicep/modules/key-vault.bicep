@@ -2,11 +2,12 @@
 
 param location string = resourceGroup().location
 param environment string = 'prod'
-param appServicePrincipalId string
+param appServicePrincipalId string = ''
 
 var keyVaultName = '${environment}-minitrello-kv'
 
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
+// Only create Key Vault if appServicePrincipalId is provided
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = if (!empty(appServicePrincipalId)) {
   name: keyVaultName
   location: location
   properties: {
@@ -35,6 +36,6 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   }
 }
 
-output keyVaultName string = keyVault.name
-output keyVaultUri string = keyVault.properties.vaultUri
+output keyVaultName string = !empty(appServicePrincipalId) ? (keyVault.name) : ''
+output keyVaultUri string = !empty(appServicePrincipalId) ? (keyVault.properties.vaultUri) : ''
 

@@ -55,7 +55,7 @@ param repositoryUrl string = 'https://github.com/majkus1/menago-task-manager'
 @description('GitHub repository branch')
 param repositoryBranch string = 'main'
 
-@description('App Service Principal ID (for Key Vault access, optional)')
+@description('App Service Principal ID (for Key Vault access, optional - leave empty to skip Key Vault)')
 param appServicePrincipalId string = ''
 
 // Deploy Application Insights
@@ -105,8 +105,8 @@ module appService 'modules/app-service.bicep' = {
   }
 }
 
-// Deploy Key Vault (optional)
-module keyVault 'modules/key-vault.bicep' = {
+// Deploy Key Vault (optional - only if appServicePrincipalId is provided)
+module keyVault 'modules/key-vault.bicep' = if (!empty(appServicePrincipalId)) {
   name: 'keyVault'
   params: {
     location: location
@@ -135,6 +135,6 @@ output frontendUrl string = staticWebApp.outputs.staticWebAppUrl
 output postgresServerName string = postgresql.outputs.serverName
 output postgresServerFqdn string = postgresql.outputs.serverFqdn
 output appInsightsInstrumentationKey string = appInsights.outputs.instrumentationKey
-output keyVaultName string = keyVault.outputs.keyVaultName
-output keyVaultUri string = keyVault.outputs.keyVaultUri
+output keyVaultName string = !empty(appServicePrincipalId) ? keyVault.outputs.keyVaultName : ''
+output keyVaultUri string = !empty(appServicePrincipalId) ? keyVault.outputs.keyVaultUri : ''
 
