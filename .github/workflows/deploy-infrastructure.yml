@@ -47,14 +47,13 @@ jobs:
         run: |
           az group create --name ${{ env.AZURE_RESOURCE_GROUP }} --location ${{ env.AZURE_LOCATION }} || true
 
-      - name: Deploy Bicep Infrastructure
-        uses: azure/arm-deploy@v2
-        with:
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
-          template: ./infrastructure/bicep/main.bicep
-          parameters: |
-            {
+      - name: Create Parameters File
+        run: |
+          cat > /tmp/parameters.json <<EOF
+          {
+            "\$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
               "environment": {
                 "value": "${{ github.event.inputs.environment || 'prod' }}"
               },
@@ -110,6 +109,16 @@ jobs:
                 "value": "${{ secrets.APP_SERVICE_PRINCIPAL_ID || '' }}"
               }
             }
+          }
+          EOF
+
+      - name: Deploy Bicep Infrastructure
+        uses: azure/arm-deploy@v2
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
+          template: ./infrastructure/bicep/main.bicep
+          parameters: /tmp/parameters.json
           failOnStdErr: false
 
       - name: Get Deployment Outputs
