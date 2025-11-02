@@ -47,6 +47,22 @@ jobs:
         run: |
           az group create --name ${{ env.AZURE_RESOURCE_GROUP }} --location ${{ env.AZURE_LOCATION }} || true
 
+      - name: Cancel any active deployments
+        run: |
+          # Cancel any active deployments in the resource group
+          DEPLOYMENTS=$(az deployment group list --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "[?properties.provisioningState=='Running' || properties.provisioningState=='Accepted'].name" -o tsv)
+          if [ ! -z "$DEPLOYMENTS" ]; then
+            echo "Found active deployments, canceling them..."
+            for DEPLOYMENT_NAME in $DEPLOYMENTS; do
+              echo "Canceling deployment: $DEPLOYMENT_NAME"
+              az deployment group cancel --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name "$DEPLOYMENT_NAME" || true
+            done
+            echo "Waiting 10 seconds for cancellations to complete..."
+            sleep 10
+          else
+            echo "No active deployments found."
+          fi
+
       - name: Create Parameters File
         run: |
           cat > /tmp/parameters.json <<EOF
@@ -119,6 +135,7 @@ jobs:
           resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
           template: ./infrastructure/bicep/main.bicep
           parameters: /tmp/parameters.json
+          deploymentName: minitrello-deployment-${{ github.run_id }}-${{ github.run_number }}
           failOnStdErr: false
 
       - name: Get Deployment Outputs
