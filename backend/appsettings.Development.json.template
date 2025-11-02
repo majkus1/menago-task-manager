@@ -1,0 +1,37 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5433;Database=menago_task_dev;Username=postgres;Password=password"
+  },
+  "Jwt": {
+    "Key": "REPLACE_WITH_RANDOM_64_CHAR_STRING",
+    "Issuer": "MENAGO_TASK_API-Dev"
+  },
+  "Resend": {
+    "ApiKey": "re_YOUR_RESEND_API_KEY_HERE",
+    "FromEmail": "noreply@resend.dev"
+  },
+  "Email": {
+    "SmtpHost": "smtp.gmail.com",
+    "SmtpPort": 587,
+    "Username": "YOUR_EMAIL@gmail.com",
+    "Password": "YOUR_APP_PASSWORD",
+    "FromEmail": "YOUR_EMAIL@gmail.com",
+    "FromName": "MENAGO TASK"
+  },
+  "Frontend": {
+    "Url": "http://localhost:3000"
+  },
+  "Serilog": {
+    "MinimumLevel": "Debug"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Microsoft.EntityFrameworkCore": "Information"
+    }
+  },
+  "Application": {
+    "BaseUrl": "http://localhost:5016"
+  }
+}

@@ -1,0 +1,67 @@
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+*.sln.iml
+
+# .NET
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Sensitive configuration files - DO NOT COMMIT SECRETS!
+appsettings.Development.json
+appsettings.Production.json
+appsettings.*.json.local
+
+# User secrets (ASP.NET Core)
+**/Properties/secrets.json
+
+# Uploads directory
+uploads/
+
+# Log files
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# Temporary files
+*.tmp
+*.temp
+

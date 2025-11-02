@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="TeamInvitation_Subject" xml:space="preserve">
+    <value>Zostałeś zaproszony do zespołu {0}</value>
+  </data>
+  <data name="TeamInvitation_Body" xml:space="preserve">
+    <value>&lt;div style=&quot;font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;&quot;&gt;
+  &lt;h2 style=&quot;color: #2563eb;&quot;&gt;Zaproszenie do zespołu&lt;/h2&gt;
+  &lt;p&gt;Witaj,&lt;/p&gt;
+  &lt;p&gt;{0} zaprosił Cię do dołączenia do zespołu &lt;strong&gt;{1}&lt;/strong&gt; w MENAGO TASK.&lt;/p&gt;
+  &lt;p&gt;Możesz teraz zalogować się do swojego konta i rozpocząć współpracę z zespołem.&lt;/p&gt;
+  &lt;p style=&quot;text-align: center; margin: 30px 0;&quot;&gt;
+    &lt;a href=&quot;{2}&quot; 
+       style=&quot;background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;&quot;&gt;
+      Zaloguj się
+    &lt;/a&gt;
+  &lt;/p&gt;
+  &lt;hr style=&quot;border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;&quot;&gt;
+  &lt;p style=&quot;color: #9ca3af; font-size: 12px; text-align: center;&quot;&gt;
+    Zespół MENAGO TASK
+  &lt;/p&gt;
+&lt;/div&gt;</value>
+  </data>
+  <data name="TeamInvitationWithRegistration_Subject" xml:space="preserve">
+    <value>Zaproszenie do zespołu {0} - Utwórz konto</value>
+  </data>
+  <data name="TeamInvitationWithRegistration_Body" xml:space="preserve">
+    <value>&lt;div style=&quot;font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;&quot;&gt;
+  &lt;h2 style=&quot;color: #2563eb;&quot;&gt;Zaproszenie do zespołu&lt;/h2&gt;
+  &lt;p&gt;Witaj,&lt;/p&gt;
+  &lt;p&gt;{0} zaprosił Cię do dołączenia do zespołu &lt;strong&gt;{1}&lt;/strong&gt; w MENAGO TASK.&lt;/p&gt;
+  &lt;p&gt;Aby rozpocząć, utwórz konto używając poniższego linku:&lt;/p&gt;
+  &lt;p style=&quot;text-align: center; margin: 30px 0;&quot;&gt;
+    &lt;a href=&quot;{2}&quot; 
+       style=&quot;background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;&quot;&gt;
+      Utwórz konto
+    &lt;/a&gt;
+  &lt;/p&gt;
+  &lt;hr style=&quot;border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;&quot;&gt;
+  &lt;p style=&quot;color: #9ca3af; font-size: 12px; text-align: center;&quot;&gt;
+    Zespół MENAGO TASK
+  &lt;/p&gt;
+&lt;/div&gt;</value>
+  </data>
+  <data name="PasswordReset_Subject" xml:space="preserve">
+    <value>Resetuj hasło - MENAGO TASK</value>
+  </data>
+  <data name="PasswordReset_Body" xml:space="preserve">
+    <value>&lt;div style=&quot;font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;&quot;&gt;
+  &lt;h2 style=&quot;color: #2563eb;&quot;&gt;Resetuj hasło&lt;/h2&gt;
+  &lt;p&gt;Witaj,&lt;/p&gt;
+  &lt;p&gt;Otrzymaliśmy prośbę o resetowanie hasła dla Twojego konta MENAGO TASK.&lt;/p&gt;
+  &lt;p&gt;Kliknij poniższy link, aby zresetować hasło:&lt;/p&gt;
+  &lt;p style=&quot;text-align: center; margin: 30px 0;&quot;&gt;
+    &lt;a href=&quot;{0}&quot; 
+       style=&quot;background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;&quot;&gt;
+      Resetuj hasło
+    &lt;/a&gt;
+  &lt;/p&gt;
+  &lt;p&gt;Lub skopiuj i wklej poniższy link do przeglądarki:&lt;/p&gt;
+  &lt;p style=&quot;color: #6b7280; font-size: 12px; word-break: break-all;&quot;&gt;{0}&lt;/p&gt;
+  &lt;p style=&quot;color: #ef4444; font-weight: bold;&quot;&gt;Ten link wygasa za 24 godziny.&lt;/p&gt;
+  &lt;p style=&quot;color: #6b7280; font-size: 14px; margin-top: 30px;&quot;&gt;
+    Jeśli nie prosiłeś o resetowanie hasła, zignoruj tę wiadomość.
+  &lt;/p&gt;
+  &lt;hr style=&quot;border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;&quot;&gt;
+  &lt;p style=&quot;color: #9ca3af; font-size: 12px; text-align: center;&quot;&gt;
+    Zespół MENAGO TASK
+  &lt;/p&gt;
+&lt;/div&gt;</value>
+  </data>
+</root>
+

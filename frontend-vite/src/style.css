@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+@layer base {
+  /* Global heading styles - smaller on mobile, normal on desktop */
+  /* Using direct CSS to override inline Tailwind classes */
+  h1 {
+    font-size: 1.25rem !important; /* text-xl */
+    font-weight: 700; /* font-bold */
+  }
+  
+  @media (min-width: 640px) {
+    h1 {
+      font-size: 1.5rem !important; /* text-2xl */
+    }
+  }
+  
+  h2 {
+    font-size: 1.125rem !important; /* text-lg */
+    font-weight: 600; /* font-semibold */
+  }
+  
+  @media (min-width: 640px) {
+    h2 {
+      font-size: 1.25rem !important; /* text-xl */
+    }
+  }
+  
+  h3 {
+    font-size: 1rem !important; /* text-base */
+    font-weight: 600; /* font-semibold */
+  }
+  
+  @media (min-width: 640px) {
+    h3 {
+      font-size: 1.125rem !important; /* text-lg */
+    }
+  }
+  
+  h4 {
+    font-size: 0.875rem !important; /* text-sm */
+    font-weight: 500; /* font-medium */
+  }
+  
+  @media (min-width: 640px) {
+    h4 {
+      font-size: 1rem !important; /* text-base */
+    }
+  }
+  
+  h5 {
+    font-size: 0.875rem !important; /* text-sm */
+    font-weight: 500; /* font-medium */
+  }
+  
+  @media (min-width: 640px) {
+    h5 {
+      font-size: 0.875rem !important; /* text-sm */
+    }
+  }
+  
+  h6 {
+    font-size: 0.75rem !important; /* text-xs */
+    font-weight: 500; /* font-medium */
+  }
+  
+  @media (min-width: 640px) {
+    h6 {
+      font-size: 0.875rem !important; /* text-sm */
+    }
+  }
+  
+  /* Global button cursor */
+  button {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+  }
+  
+  .button-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md font-medium transition-colors;
+  }
+  
+  .button-secondary {
+    @apply bg-gray-200 text-gray-900 hover:bg-gray-300 px-4 py-2 rounded-md font-medium transition-colors;
+  }
+  
+  .input-field {
+    @apply flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  
+  .board-card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-all duration-200 cursor-pointer;
+  }
+  
+  .list-container {
+    @apply bg-gray-50 rounded-lg p-3 min-h-[200px] w-full md:min-w-[280px] md:max-w-[320px];
+  }
+  
+  .card-item {
+    @apply bg-white rounded-md shadow-sm border border-gray-200 p-3 mb-2 cursor-pointer hover:shadow-md transition-all duration-200;
+  }
+  
+  .card-item.dragging {
+    @apply opacity-50 rotate-2 scale-105;
+  }
+  
+  .list-container.drag-over {
+    @apply border-blue-400 bg-blue-50;
+  }
+  
+  .drop-indicator {
+    @apply h-2 bg-blue-400 rounded-full mx-2 mb-2;
+  }
+}

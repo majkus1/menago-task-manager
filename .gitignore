@@ -1,0 +1,40 @@
+# MiniTrello Project - .gitignore
+
+# Backend sensitive configs (handled by backend/.gitignore)
+backend/appsettings.Development.json
+backend/appsettings.Production.json
+backend/uploads/
+
+# Frontend
+frontend-vite/node_modules/
+frontend-vite/dist/
+frontend-vite/.vite/
+
+# Logs
+**/logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+
+# Temporary files
+*.tmp
+*.temp
+
+# Documentation artifacts
+*.md.bak
+
+# Security reports (can be sensitive)
+# SECURITY_AUDIT_REPORT.md
+# IMPLEMENTED_SECURITY.md
+
