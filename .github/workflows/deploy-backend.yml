@@ -73,15 +73,14 @@ jobs:
         with:
           app-name: ${{ steps.appServiceName.outputs.name }}
           package: ./backend/publish
-          runtime: 'DOTNET|9.0'
 
       - name: Wait for App Service to Start
         run: |
           APP_SERVICE_NAME=${{ steps.appServiceName.outputs.name }}
           APP_SERVICE_URL=$(az webapp show --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name $APP_SERVICE_NAME --query defaultHostName -o tsv)
           echo "Backend deployed to: https://$APP_SERVICE_URL"
-          echo "Waiting 30 seconds for application to start and run migrations..."
-          sleep 30
+          echo "Waiting 45 seconds for application to start and run migrations..."
+          sleep 45
 
       - name: Health Check
         run: |
@@ -97,9 +96,10 @@ jobs:
             echo "Swagger UI: https://$APP_SERVICE_URL/swagger"
           else
             echo "⚠️ Application returned HTTP $HTTP_CODE (might still be starting or needs authentication)"
-            echo "Checking application logs..."
-            # Get recent logs
-            az webapp log tail --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name $APP_SERVICE_NAME --timeout 5 || echo "Could not fetch logs"
+            echo ""
+            echo "Checking application status..."
+            APP_STATUS=$(az webapp show --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name $APP_SERVICE_NAME --query state -o tsv || echo "unknown")
+            echo "App Service State: $APP_STATUS"
           fi
           
           echo ""
