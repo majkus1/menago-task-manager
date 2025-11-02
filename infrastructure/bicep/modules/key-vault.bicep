@@ -36,6 +36,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = if (!empty(appService
   }
 }
 
-output keyVaultName string = !empty(appServicePrincipalId) ? (keyVault.name) : ''
-output keyVaultUri string = !empty(appServicePrincipalId) ? (keyVault.properties.vaultUri) : ''
+output keyVaultName string = !empty(appServicePrincipalId) ? keyVault!.name : ''
+
+output keyVaultUri string = !empty(appServicePrincipalId) ? keyVault!.properties.vaultUri : ''
 

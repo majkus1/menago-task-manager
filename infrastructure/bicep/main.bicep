@@ -135,6 +135,9 @@ output frontendUrl string = staticWebApp.outputs.staticWebAppUrl
 output postgresServerName string = postgresql.outputs.serverName
 output postgresServerFqdn string = postgresql.outputs.serverFqdn
 output appInsightsInstrumentationKey string = appInsights.outputs.instrumentationKey
-output keyVaultName string = !empty(appServicePrincipalId) ? keyVault.outputs.keyVaultName : ''
-output keyVaultUri string = !empty(appServicePrincipalId) ? keyVault.outputs.keyVaultUri : ''
+@description('Key Vault name (empty if Key Vault is not deployed)')
+output keyVaultName string = !empty(appServicePrincipalId) ? keyVault!.outputs.keyVaultName : ''
+
+@description('Key Vault URI (empty if Key Vault is not deployed)')
+output keyVaultUri string = !empty(appServicePrincipalId) ? keyVault!.outputs.keyVaultUri : ''
 
