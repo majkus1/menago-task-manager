@@ -103,6 +103,10 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
           name: 'ASPNETCORE_ENVIRONMENT'
           value: 'Production'
         }
+        {
+          name: 'ConnectionStrings__DefaultConnection'
+          value: postgresConnectionString
+        }
       ]
       connectionStrings: [
         {
