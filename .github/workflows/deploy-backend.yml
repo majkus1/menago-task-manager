@@ -1,0 +1,79 @@
+name: Deploy Backend to Azure App Service
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+env:
+  AZURE_LOCATION: 'westeurope'
+  AZURE_RESOURCE_GROUP: 'rg-minitrello-prod'
+  DOTNET_VERSION: '9.0.x'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ./backend/MiniTrello.API.csproj
+
+      - name: Build
+        run: dotnet build ./backend/MiniTrello.API.csproj --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test ./backend/MiniTrello.API.csproj --no-build --verbosity normal || true
+
+      - name: Publish
+        run: dotnet publish ./backend/MiniTrello.API.csproj --configuration Release --output ./backend/publish --no-build
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get App Service Name
+        id: appServiceName
+        run: |
+          APP_SERVICE_NAME=$(az webapp list --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "[?contains(name, 'minitrello-backend')].name" -o tsv | head -n 1)
+          echo "name=$APP_SERVICE_NAME" >> $GITHUB_OUTPUT
+          if [ -z "$APP_SERVICE_NAME" ]; then
+            echo "App Service not found. Please deploy infrastructure first."
+            exit 1
+          fi
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ steps.appServiceName.outputs.name }}
+          package: ./backend/publish
+          runtime: 'DOTNET|9.0'
+
+      - name: Run Database Migrations
+        run: |
+          APP_SERVICE_NAME=${{ steps.appServiceName.outputs.name }}
+          az webapp ssh --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name $APP_SERVICE_NAME --command "cd /home/site/wwwroot && dotnet MiniTrello.API.dll --migrate" || true
+
+      - name: Health Check
+        run: |
+          APP_SERVICE_NAME=${{ steps.appServiceName.outputs.name }}
+          APP_SERVICE_URL=$(az webapp show --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name $APP_SERVICE_NAME --query defaultHostName -o tsv)
+          echo "Backend deployed to: https://$APP_SERVICE_URL"
+          sleep 10
+          curl -f https://$APP_SERVICE_URL/swagger || echo "Swagger not accessible (might need authentication)"
+

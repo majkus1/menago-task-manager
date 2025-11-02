@@ -1,0 +1,79 @@
+name: Deploy Azure Infrastructure (IaC)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment (prod, dev, staging)'
+        required: true
+        default: 'prod'
+        type: choice
+        options:
+          - prod
+          - dev
+          - staging
+  push:
+    branches:
+      - main
+    paths:
+      - 'infrastructure/**'
+      - '.github/workflows/deploy-infrastructure.yml'
+
+env:
+  AZURE_LOCATION: 'westeurope'
+  AZURE_RESOURCE_GROUP: 'rg-minitrello-prod'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'prod' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create Resource Group if not exists
+        run: |
+          az group create --name ${{ env.AZURE_RESOURCE_GROUP }} --location ${{ env.AZURE_LOCATION }} || true
+
+      - name: Deploy Bicep Infrastructure
+        uses: azure/arm-deploy@v2
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
+          template: ./infrastructure/bicep/main.bicep
+          parameters: |
+            environment=${{ github.event.inputs.environment || 'prod' }}
+            location=${{ env.AZURE_LOCATION }}
+            postgresAdminLogin=minitrello_admin
+            postgresAdminPassword=${{ secrets.POSTGRES_ADMIN_PASSWORD }}
+            jwtKey=${{ secrets.JWT_KEY }}
+            jwtIssuer=MiniTrello-API
+            frontendUrl=${{ secrets.FRONTEND_URL }}
+            applicationBaseUrl=${{ secrets.APPLICATION_BASE_URL }}
+            resendApiKey=${{ secrets.RESEND_API_KEY }}
+            resendFromEmail=${{ secrets.RESEND_FROM_EMAIL }}
+            emailSmtpHost=${{ secrets.EMAIL_SMTP_HOST }}
+            emailSmtpPort=${{ secrets.EMAIL_SMTP_PORT || '587' }}
+            emailUsername=${{ secrets.EMAIL_USERNAME }}
+            emailPassword=${{ secrets.EMAIL_PASSWORD }}
+            emailFromEmail=${{ secrets.EMAIL_FROM_EMAIL }}
+            repositoryUrl=https://github.com/${{ github.repository }}
+            repositoryBranch=${{ github.ref_name }}
+            appServicePrincipalId=${{ secrets.APP_SERVICE_PRINCIPAL_ID || '' }}
+          failOnStdErr: false
+
+      - name: Get Deployment Outputs
+        id: outputs
+        run: |
+          echo "Infrastructure deployed successfully!"
+          echo "Backend URL: $(az deployment group show --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name main --query properties.outputs.backendUrl.value -o tsv)"
+          echo "Frontend URL: $(az deployment group show --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name main --query properties.outputs.frontendUrl.value -o tsv)"
+

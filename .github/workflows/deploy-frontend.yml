@@ -1,0 +1,83 @@
+name: Deploy Frontend to Azure Static Web Apps
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend-vite/**'
+      - '.github/workflows/deploy-frontend.yml'
+  workflow_dispatch:
+
+env:
+  AZURE_LOCATION: 'westeurope'
+  AZURE_RESOURCE_GROUP: 'rg-minitrello-prod'
+  NODE_VERSION: '20.x'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: prod
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          lfs: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend-vite/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./frontend-vite
+        run: npm ci
+
+      - name: Build
+        working-directory: ./frontend-vite
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL || 'https://prod-minitrello-backend.azurewebsites.net/api' }}
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get Static Web App Name
+        id: staticWebAppName
+        run: |
+          STATIC_WEB_APP_NAME=$(az staticwebapp list --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "[?contains(name, 'minitrello-frontend')].name" -o tsv | head -n 1)
+          echo "name=$STATIC_WEB_APP_NAME" >> $GITHUB_OUTPUT
+          if [ -z "$STATIC_WEB_APP_NAME" ]; then
+            echo "Static Web App not found. Please deploy infrastructure first."
+            exit 1
+          fi
+
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: 'upload'
+          app_location: 'frontend-vite'
+          output_location: 'dist'
+          skip_app_build: true
+
+      - name: Health Check
+        run: |
+          STATIC_WEB_APP_NAME=${{ steps.staticWebAppName.outputs.name }}
+          STATIC_WEB_APP_URL=$(az staticwebapp show --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name $STATIC_WEB_APP_NAME --query defaultHostname -o tsv)
+          echo "Frontend deployed to: https://$STATIC_WEB_APP_URL"
+          sleep 10
+          curl -f https://$STATIC_WEB_APP_URL || echo "Frontend might be still deploying"
+
