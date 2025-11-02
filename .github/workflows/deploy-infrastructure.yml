@@ -47,6 +47,14 @@ jobs:
         run: |
           az group create --name ${{ env.AZURE_RESOURCE_GROUP }} --location ${{ env.AZURE_LOCATION }} || true
 
+      - name: Register Required Resource Providers
+        run: |
+          echo "Registering Microsoft.OperationalInsights provider (required for Application Insights)..."
+          az provider register --namespace Microsoft.OperationalInsights --wait || true
+          echo "Registering Microsoft.Insights provider..."
+          az provider register --namespace Microsoft.Insights --wait || true
+          echo "Registration complete."
+
       - name: Cancel any active deployments
         run: |
           # Cancel any active deployments in the resource group
