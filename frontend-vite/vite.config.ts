@@ -21,6 +21,18 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, './src'),
       },
     },
+    build: {
+      sourcemap: false, // Disable source maps in production to reduce file count
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // Split vendor chunks to reduce individual file sizes
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-popover', '@radix-ui/react-select'],
+          },
+        },
+      },
+    },
     server: {
       port: 3000,
       proxy: {
