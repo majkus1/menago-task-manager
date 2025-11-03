@@ -96,7 +96,8 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: 'upload'
-          app_artifact_location: 'frontend-vite/dist'
+          app_location: 'frontend-vite/dist'
+          output_location: '.'
           skip_app_build: true
 
       - name: Health Check
