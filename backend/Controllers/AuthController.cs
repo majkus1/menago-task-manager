@@ -157,13 +157,18 @@ public class AuthController : ControllerBase
 
     private void SetAuthCookie(string token)
     {
+        // For cross-site requests (frontend and backend on different domains),
+        // we need SameSite=None and Secure=true
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,                    // Not accessible via JavaScript
-            Secure = !_env.IsDevelopment(),     // Secure=true in production, false in dev
-            SameSite = SameSiteMode.Strict,    // Better CSRF protection
+            Secure = true,                      // Always secure in production (required for SameSite=None)
+            SameSite = _env.IsDevelopment() 
+                ? SameSiteMode.Lax              // Lax works for same-site in development
+                : SameSiteMode.None,            // None required for cross-site in production
             Expires = DateTime.UtcNow.AddDays(7), // 7 days expiration
-            Path = "/"                         // Available for all paths
+            Path = "/",                         // Available for all paths
+            Domain = null                       // Don't set domain to allow cross-site
         };
 
         Response.Cookies.Append("access_token", token, cookieOptions);
