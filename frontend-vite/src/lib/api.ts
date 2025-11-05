@@ -38,14 +38,17 @@ class ApiClient {
   private client: AxiosInstance;
 
   constructor() {
-    // Always use relative path - Azure Static Web Apps will proxy to backend
-    // via Azure Functions Proxy configured in Azure Portal
-    const apiBaseUrl = '/api';
+    // In production, use direct backend URL (Static Web Apps doesn't support external rewrite)
+    // In development, use relative path (Vite proxy handles it)
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL 
+      || (import.meta.env.PROD 
+        ? 'https://prod-minitrello-backend.azurewebsites.net/api'
+        : '/api');
     
     this.client = axios.create({
       baseURL: apiBaseUrl,
       timeout: 10000,
-      withCredentials: true, // Send cookies with requests (same-site now, works on mobile)
+      withCredentials: true, // Send cookies with requests (cross-site in production, works on mobile with SameSite=None)
       headers: {
         'Content-Type': 'application/json',
       },
