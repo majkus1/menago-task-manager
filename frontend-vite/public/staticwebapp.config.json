@@ -10,7 +10,6 @@
     {
       "route": "/api/*",
       "rewrite": "https://prod-minitrello-backend.azurewebsites.net/api/*",
-      "statusCode": 200,
       "allowedRoles": ["anonymous"]
     }
   ],
