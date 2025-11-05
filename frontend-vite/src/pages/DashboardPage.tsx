@@ -32,7 +32,17 @@ export function DashboardPage() {
 
   const { data: boards = [], isLoading: boardsLoading } = useQuery({
     queryKey: ['boards', currentTeam?.id],
-    queryFn: () => apiClient.getBoards(),
+    queryFn: async () => {
+      try {
+        const result = await apiClient.getBoards();
+        // Ensure we always return an array
+        return Array.isArray(result) ? result : [];
+      } catch (err) {
+        // Return empty array on error instead of throwing
+        console.error('Error fetching boards:', err);
+        return [];
+      }
+    },
     enabled: !!currentTeam,
     refetchOnMount: 'always', // Always refetch when component mounts to ensure fresh data
     refetchOnWindowFocus: true, // Refetch when user returns to the tab

@@ -387,7 +387,7 @@ export function DragDropBoard({ board, onCardClick, onCreateCard, onCreateList, 
       onDragEnd={handleDragEnd}
     >
       <div className="flex flex-col md:flex-row gap-6 overflow-x-auto pb-6">
-        {board.lists.map((list: ListDto) => (
+        {(Array.isArray(board.lists) ? board.lists : []).map((list: ListDto) => (
           <DraggableList
             key={list.id}
             list={list}

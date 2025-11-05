@@ -28,7 +28,17 @@ export function TeamProvider({ children }: TeamProviderProps) {
   // Fetch user's teams
   const { data: teams, isLoading, error } = useQuery({
     queryKey: ['teams'],
-    queryFn: () => apiClient.getTeams(),
+    queryFn: async () => {
+      try {
+        const result = await apiClient.getTeams();
+        // Ensure we always return an array
+        return Array.isArray(result) ? result : [];
+      } catch (err) {
+        // Return empty array on error instead of throwing
+        console.error('Error fetching teams:', err);
+        return [];
+      }
+    },
     enabled: !!user,
   });
 
