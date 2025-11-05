@@ -159,6 +159,7 @@ public class AuthController : ControllerBase
     {
         // Static Web Apps rewrite routes to backend, but requests are still cross-site
         // We need SameSite=None for cross-site cookies to work on mobile
+        // Mobile Safari requires SameSite=None + Secure=true, and cookies must be set with proper attributes
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,                    // Not accessible via JavaScript
@@ -168,9 +169,11 @@ public class AuthController : ControllerBase
                 : SameSiteMode.None,            // None required for cross-site (Static Web Apps → App Service)
             Expires = DateTime.UtcNow.AddDays(7), // 7 days expiration
             Path = "/",                         // Available for all paths
-            Domain = null                       // Don't set domain
+            Domain = null,                      // Don't set domain (allows cross-site)
+            IsEssential = true                  // Mark as essential cookie (helps with mobile Safari)
         };
 
+        // Set cookie - mobile Safari requires SameSite=None + Secure=true
         Response.Cookies.Append("access_token", token, cookieOptions);
     }
 }

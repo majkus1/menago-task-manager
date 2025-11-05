@@ -199,7 +199,10 @@ app.UseRequestLocalization(localizationOptions);
 
 app.UseHttpsRedirection();
 
-// Security headers
+// CORS must come BEFORE security headers and authentication for mobile Safari cookies
+app.UseCors("AllowFrontend");
+
+// Security headers (after CORS to allow cookies)
 app.Use(async (context, next) =>
 {
     context.Response.Headers["X-Content-Type-Options"] = "nosniff";
@@ -209,10 +212,8 @@ app.Use(async (context, next) =>
     await next();
 });
 
-// Rate limiting must come BEFORE CORS and authentication
+// Rate limiting must come BEFORE authentication
 app.UseIpRateLimiting();
-
-app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
