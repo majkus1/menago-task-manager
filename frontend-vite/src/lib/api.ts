@@ -38,14 +38,14 @@ class ApiClient {
   private client: AxiosInstance;
 
   constructor() {
-    // In development, use relative path (Vite proxy handles it)
-    // In production, use full API URL from environment variable
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+    // Always use relative path - Azure Static Web Apps will proxy to backend
+    // via Azure Functions Proxy configured in Azure Portal
+    const apiBaseUrl = '/api';
     
     this.client = axios.create({
       baseURL: apiBaseUrl,
       timeout: 10000,
-      withCredentials: true, // Send cookies with requests
+      withCredentials: true, // Send cookies with requests (same-site now, works on mobile)
       headers: {
         'Content-Type': 'application/json',
       },
