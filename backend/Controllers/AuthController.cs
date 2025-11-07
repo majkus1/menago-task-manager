@@ -150,8 +150,9 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public ActionResult Logout()
     {
-        // Clear the HTTP-only cookie
-        Response.Cookies.Delete("access_token");
+        // Clear the HTTP-only cookie using the same method as SetAuthCookie
+        // Must use same attributes (HttpOnly, Secure, SameSite, Path) to properly delete
+        ClearAuthCookie();
         return Ok(new { message = "Logged out successfully" });
     }
 
@@ -167,6 +168,19 @@ public class AuthController : ControllerBase
         var cookieValue = $"access_token={token}; HttpOnly; {(isSecure ? "Secure; " : "")}SameSite=Lax; Max-Age={maxAgeSeconds}; Path=/";
         
         // Set cookie header directly (like Node.js res.cookie())
+        Response.Headers.Append("Set-Cookie", cookieValue);
+    }
+
+    private void ClearAuthCookie()
+    {
+        // Delete cookie by setting Max-Age=0 with the same attributes as SetAuthCookie
+        // Must match HttpOnly, Secure, SameSite, and Path to properly delete the cookie
+        var isSecure = Request.IsHttps || !_env.IsDevelopment();
+        
+        // Set cookie to expire immediately (Max-Age=0) with same attributes
+        var cookieValue = $"access_token=; HttpOnly; {(isSecure ? "Secure; " : "")}SameSite=Lax; Max-Age=0; Path=/";
+        
+        // Set cookie header directly to delete it
         Response.Headers.Append("Set-Cookie", cookieValue);
     }
 }

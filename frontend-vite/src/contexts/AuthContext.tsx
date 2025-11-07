@@ -10,7 +10,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (data: LoginDto) => Promise<void>;
   register: (data: RegisterTeamDto) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   setUser: (user: UserDto | null) => void;
 }
 

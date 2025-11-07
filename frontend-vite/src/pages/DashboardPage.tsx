@@ -107,8 +107,8 @@ export function DashboardPage() {
     setAddAllMembers(addAll);
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
