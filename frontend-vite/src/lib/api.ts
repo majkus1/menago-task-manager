@@ -38,10 +38,11 @@ class ApiClient {
   private client: AxiosInstance;
 
   constructor() {
-    // In production, use /api path (Static Web Apps will proxy to linked App Service backend)
+    // In production, always use /api path (Static Web Apps will proxy to linked App Service backend)
     // In development, use relative path (Vite proxy handles it)
     // All requests go through SWA origin, so cookies are first-party (SameSite=Lax works)
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+    // Force /api in production to ensure SWA proxy is used (ignore VITE_API_BASE_URL if set)
+    const apiBaseUrl = import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_BASE_URL || '/api');
     
     this.client = axios.create({
       baseURL: apiBaseUrl,
