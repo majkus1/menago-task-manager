@@ -158,22 +158,17 @@ public class AuthController : ControllerBase
     private void SetAuthCookie(string token)
     {
         // Static Web Apps rewrite routes to backend, but requests are still cross-site
-        // We need SameSite=None for cross-site cookies to work on mobile
-        // Mobile Safari requires SameSite=None + Secure=true, and cookies must be set with proper attributes
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,                    // Not accessible via JavaScript
-            Secure = true,                      // Always secure (required for SameSite=None)
-            SameSite = _env.IsDevelopment() 
-                ? SameSiteMode.Lax              // Lax works for same-site in development
-                : SameSiteMode.None,            // None required for cross-site (Static Web Apps → App Service)
-            Expires = DateTime.UtcNow.AddDays(7), // 7 days expiration
-            Path = "/",                         // Available for all paths
-            Domain = null,                      // Don't set domain (allows cross-site)
-            IsEssential = true                  // Mark as essential cookie (helps with mobile Safari)
-        };
-
-        // Set cookie - mobile Safari requires SameSite=None + Secure=true
-        Response.Cookies.Append("access_token", token, cookieOptions);
+        // In development: use SameSite=Lax (works for same-site on localhost)
+        // In production: use SameSite=None + Secure (required for cross-site on mobile)
+        // Use direct Set-Cookie header (like Node.js) for full control over formatting
+        var isSecure = Request.IsHttps || !_env.IsDevelopment();
+        var sameSite = _env.IsDevelopment() ? "Lax" : "None";
+        var maxAgeSeconds = 7 * 24 * 60 * 60; // 7 days in seconds (like Node.js maxAge in milliseconds, but Set-Cookie uses seconds)
+        
+        // Build Set-Cookie header exactly like Node.js: httpOnly; secure; sameSite; maxAge
+        var cookieValue = $"access_token={token}; HttpOnly; {(isSecure ? "Secure; " : "")}SameSite={sameSite}; Max-Age={maxAgeSeconds}; Path=/";
+        
+        // Set cookie header directly (like Node.js res.cookie())
+        Response.Headers.Append("Set-Cookie", cookieValue);
     }
 }
