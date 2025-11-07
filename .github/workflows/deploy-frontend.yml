@@ -98,6 +98,7 @@ jobs:
           action: 'upload'
           app_location: 'frontend-vite/dist'
           output_location: '.'
+          api_location: ''  # Disable managed Functions - we'll use linked App Service backend
           skip_app_build: true
 
       - name: Health Check

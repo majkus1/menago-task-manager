@@ -38,17 +38,15 @@ class ApiClient {
   private client: AxiosInstance;
 
   constructor() {
-    // In production, use direct backend URL (Static Web Apps doesn't support external rewrite)
+    // In production, use /api path (Static Web Apps will proxy to linked App Service backend)
     // In development, use relative path (Vite proxy handles it)
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL 
-      || (import.meta.env.PROD 
-        ? 'https://prod-minitrello-backend.azurewebsites.net/api'
-        : '/api');
+    // All requests go through SWA origin, so cookies are first-party (SameSite=Lax works)
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
     
     this.client = axios.create({
       baseURL: apiBaseUrl,
       timeout: 10000,
-      withCredentials: true, // Send cookies with requests (cross-site in production, works on mobile with SameSite=None)
+      withCredentials: true, // Send cookies with requests (same-origin through SWA proxy, SameSite=Lax works)
       headers: {
         'Content-Type': 'application/json',
       },

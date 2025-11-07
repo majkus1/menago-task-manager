@@ -157,16 +157,14 @@ public class AuthController : ControllerBase
 
     private void SetAuthCookie(string token)
     {
-        // Static Web Apps rewrite routes to backend, but requests are still cross-site
-        // In development: use SameSite=Lax (works for same-site on localhost)
-        // In production: use SameSite=None + Secure (required for cross-site on mobile)
+        // Static Web Apps proxies /api/* to App Service through SWA origin
+        // All requests go through SWA, so cookies are first-party (SameSite=Lax works on mobile)
         // Use direct Set-Cookie header (like Node.js) for full control over formatting
         var isSecure = Request.IsHttps || !_env.IsDevelopment();
-        var sameSite = _env.IsDevelopment() ? "Lax" : "None";
         var maxAgeSeconds = 7 * 24 * 60 * 60; // 7 days in seconds (like Node.js maxAge in milliseconds, but Set-Cookie uses seconds)
         
-        // Build Set-Cookie header exactly like Node.js: httpOnly; secure; sameSite; maxAge
-        var cookieValue = $"access_token={token}; HttpOnly; {(isSecure ? "Secure; " : "")}SameSite={sameSite}; Max-Age={maxAgeSeconds}; Path=/";
+        // Build Set-Cookie header: httpOnly; secure; SameSite=Lax (first-party cookie through SWA proxy)
+        var cookieValue = $"access_token={token}; HttpOnly; {(isSecure ? "Secure; " : "")}SameSite=Lax; Max-Age={maxAgeSeconds}; Path=/";
         
         // Set cookie header directly (like Node.js res.cookie())
         Response.Headers.Append("Set-Cookie", cookieValue);
