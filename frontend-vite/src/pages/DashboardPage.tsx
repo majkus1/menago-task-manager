@@ -143,9 +143,14 @@ export function DashboardPage() {
                   {user?.firstName}
                 </span>
               </div>
-              <Button variant="ghost" onClick={handleLogout}>
-                <LogOut className="w-4 h-4 mr-2" />
-                {t('dashboard.logOut')}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLogout}
+                title={t('dashboard.logOut')}
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="sr-only">{t('dashboard.logOut')}</span>
               </Button>
             </div>
           </div>

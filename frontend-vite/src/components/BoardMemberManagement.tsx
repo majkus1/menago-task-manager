@@ -153,45 +153,44 @@ export function BoardMemberManagement({
                   {boardMembers.map((member) => (
                     <div
                       key={member.id}
-                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border"
+                      className="p-4 bg-gray-50 rounded-lg border"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex gap-3">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                           <span className="text-blue-600 font-medium">
                             {member.user.firstName[0]}{member.user.lastName[0]}
                           </span>
                         </div>
-                        <div>
+                        <div className="flex-1">
                           <p className="font-medium">
                             {member.user.firstName} {member.user.lastName}
                           </p>
                           <p className="text-sm text-gray-600">{member.user.email}</p>
+                          <div className="mt-3 flex flex-wrap items-center gap-2">
+                            <span className={`px-2 py-1 text-xs rounded-full flex items-center gap-1 ${
+                              member.role === BoardRole.Owner ? 'bg-yellow-100 text-yellow-800' :
+                              member.role === BoardRole.Admin ? 'bg-blue-100 text-blue-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {member.role === BoardRole.Owner && <Crown className="w-3 h-3" />}
+                              {member.role === BoardRole.Admin && <Shield className="w-3 h-3" />}
+                              {t(`boardMembers.roles.${member.role === BoardRole.Owner ? 'owner' : member.role === BoardRole.Admin ? 'admin' : 'member'}`)}
+                            </span>
+
+                            {canManageMembers && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleRemoveMember(member.userId, member.role)}
+                                disabled={removeMemberMutation.isPending}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                title={member.role === BoardRole.Owner ? t('boardMembers.removeOwnerConfirm') : t('boardMembers.removeMember')}
+                              >
+                                <UserX className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-3">
-                        <span className={`px-2 py-1 text-xs rounded-full flex items-center gap-1 ${
-                          member.role === BoardRole.Owner ? 'bg-yellow-100 text-yellow-800' :
-                          member.role === BoardRole.Admin ? 'bg-blue-100 text-blue-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {member.role === BoardRole.Owner && <Crown className="w-3 h-3" />}
-                          {member.role === BoardRole.Admin && <Shield className="w-3 h-3" />}
-                          {t(`boardMembers.roles.${member.role === BoardRole.Owner ? 'owner' : member.role === BoardRole.Admin ? 'admin' : 'member'}`)}
-                        </span>
-                        
-                        {canManageMembers && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleRemoveMember(member.userId, member.role)}
-                            disabled={removeMemberMutation.isPending}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            title={member.role === BoardRole.Owner ? t('boardMembers.removeOwnerConfirm') : t('boardMembers.removeMember')}
-                          >
-                            <UserX className="w-4 h-4" />
-                          </Button>
-                        )}
                       </div>
                     </div>
                   ))}

@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import type { CreateListDto, CreateCardDto, BoardDto, CardDto } from '@/types';
 import { BoardRole } from '@/types';
-import { ArrowLeft, Plus, Users, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Users, Trash2, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { DragDropBoard } from '@/components/DragDropBoard';
 import { BoardMemberManagement } from '@/components/BoardMemberManagement';
@@ -417,26 +417,41 @@ export function BoardPage() {
             <div className="flex items-center space-x-2">
               <Button
                 variant="outline"
+                size="icon"
                 onClick={() => setShowMemberManagement(true)}
-                className="flex items-center gap-2"
+                className="relative"
+                title={`${t('board.members')} (${board.members.length})`}
               >
                 <Users className="w-4 h-4" />
-                {t('board.members')} ({board.members.length})
+                <span className="sr-only">{t('board.members')}</span>
+                {board.members.length > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 bg-blue-600 text-white text-[10px] leading-none font-semibold rounded-full flex items-center justify-center">
+                    {board.members.length}
+                  </span>
+                )}
               </Button>
               
               {canManageBoard && (
                 <Button
                   variant="outline"
+                  size="icon"
                   onClick={() => {
                     if (confirm(t('board.deleteConfirm'))) {
                       deleteBoardMutation.mutate();
                     }
                   }}
                   disabled={deleteBoardMutation.isPending}
-                  className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  title={t('board.deleteBoard')}
                 >
-                  <Trash2 className="w-4 h-4" />
-                  {deleteBoardMutation.isPending ? t('board.deleting') : t('board.deleteBoard')}
+                  {deleteBoardMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-4 h-4" />
+                  )}
+                  <span className="sr-only">
+                    {deleteBoardMutation.isPending ? t('board.deleting') : t('board.deleteBoard')}
+                  </span>
                 </Button>
               )}
             </div>
